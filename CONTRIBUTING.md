@@ -27,7 +27,7 @@ Before making any major changes, please open an issue to discuss your proposed u
 ## Technical Overview
 
 - **Deep Learning Framework:** We use [Burn 0.21](https://burn.dev/) for tensor operations, neural network modules, config structures, and autodiff.
-- **GPU Acceleration:** High-performance native NVIDIA GPU computing is orchestrated via `burn-cuda` (CubeCL/cudarc). Keep device mapping robust and GPU performance-friendly.
+- **Compute Backends:** High-performance native NVIDIA GPU computing is orchestrated via `burn-cuda` (default), WebGPU via `burn-wgpu`, and CPU fallback via `burn-ndarray`. Keep device mapping robust and generic over the `Backend` trait.
 - **No Python Wrapper:** All parts of this model are implemented natively in Rust. Keep the dependency list lean and avoid unnecessary binds.
 
 Thank you for contributing to GPT-2 Rust!

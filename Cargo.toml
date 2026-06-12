@@ -12,12 +12,10 @@ categories  = ["science", "machine-learning"]
 [dependencies]
 burn = { version = "~0.21", default-features = false, features = [
     "std",
-    "cuda",
     "fusion",
     "train",
     "tui",
     "autodiff",
-    "ndarray",
 ] }
 
 safetensors = "0.4"
@@ -45,3 +43,9 @@ approx = "0.5"
 opt-level     = 3
 lto           = false
 codegen-units = 16
+
+[features]
+default = ["cuda", "ndarray"]
+cuda = ["burn/cuda"]
+wgpu = ["burn/wgpu"]
+ndarray = ["burn/ndarray"]

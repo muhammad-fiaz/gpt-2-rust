@@ -9,10 +9,10 @@
 //! a single, highly integrated CLI binary.
 
 use anyhow::{Context, Result};
-use burn::backend::{Autodiff, Cuda};
 use burn::data::dataloader::DataLoaderBuilder;
 use burn::data::dataset::Dataset;
-use burn::prelude::Module;
+use burn::prelude::{Backend, Module};
+use burn::tensor::backend::AutodiffBackend;
 use burn::record::{CompactRecorder, Recorder};
 use clap::Parser;
 use std::path::Path;
@@ -22,6 +22,7 @@ use gpt_2_rust::{
     generate as run_autoregressive_generation, loader, training, GenerationConfig, Gpt2Config,
     Gpt2Model, Gpt2Tokenizer,
 };
+
 
 #[derive(Parser, Debug)]
 #[command(
@@ -132,6 +133,10 @@ struct Args {
     /// Random seed for reproducibility.
     #[arg(long, default_value = "42")]
     seed: u64,
+
+    /// Execution device / backend to run on: 'cuda', 'wgpu', or 'cpu'.
+    #[arg(long, default_value = "cuda")]
+    device: String,
 }
 
 // === Downloader Runner ===
@@ -280,10 +285,9 @@ fn verify_model_files(
 
 // === Generator Runner ===
 
-fn run_generate(args: &Args) -> Result<()> {
-    type Backend = Cuda<f32, i32>;
-    let device = burn::backend::cuda::CudaDevice::default();
+// === Generator Runner ===
 
+fn run_generate_with_backend<B: Backend>(args: &Args, device: &B::Device) -> Result<()> {
     let model_path = args.model.clone().unwrap_or_else(|| {
         format!("{}/{}/model.safetensors", args.weights_dir, args.size)
     });
@@ -299,11 +303,11 @@ fn run_generate(args: &Args) -> Result<()> {
     }
     .with_dropout(0.0);
 
-    let mut model: Gpt2Model<Backend> = cfg.init(&device);
+    let mut model: Gpt2Model<B> = cfg.init(device);
 
     log::info!("Loading weights from '{}'...", model_path);
     let tensor_map = loader::load_safetensors(&model_path)?;
-    model = loader::load_gpt2_weights(model, &tensor_map, &device)?;
+    model = loader::load_gpt2_weights(model, &tensor_map, device)?;
 
     let tokenizer = Gpt2Tokenizer::new()?;
     let gen_cfg = GenerationConfig {
@@ -319,19 +323,50 @@ fn run_generate(args: &Args) -> Result<()> {
     use std::io::Write;
     let _ = std::io::stdout().flush();
 
-    let _output = run_autoregressive_generation::<Backend>(&model, &tokenizer, &args.prompt, &gen_cfg, &device);
+    let _output = run_autoregressive_generation::<B>(&model, &tokenizer, &args.prompt, &gen_cfg, device);
 
     std::mem::drop(model);
     println!();
     Ok(())
 }
 
+fn run_generate(args: &Args) -> Result<()> {
+    match args.device.as_str() {
+        "cuda" => {
+            #[cfg(feature = "cuda")]
+            {
+                let device = burn::backend::cuda::CudaDevice::default();
+                run_generate_with_backend::<burn::backend::Cuda<f32, i32>>(args, &device)?;
+            }
+            #[cfg(not(feature = "cuda"))]
+            anyhow::bail!("CUDA backend is not enabled. Compile with --features cuda.");
+        }
+        "wgpu" => {
+            #[cfg(feature = "wgpu")]
+            {
+                let device = burn::backend::wgpu::WgpuDevice::default();
+                run_generate_with_backend::<burn::backend::Wgpu<f32, i32>>(args, &device)?;
+            }
+            #[cfg(not(feature = "wgpu"))]
+            anyhow::bail!("WGPU backend is not enabled. Compile with --features wgpu.");
+        }
+        "cpu" => {
+            #[cfg(feature = "ndarray")]
+            {
+                let device = burn::backend::ndarray::NdArrayDevice::default();
+                run_generate_with_backend::<burn::backend::NdArray<f32>>(args, &device)?;
+            }
+            #[cfg(not(feature = "ndarray"))]
+            anyhow::bail!("NdArray (CPU) backend is not enabled. Compile with --features ndarray.");
+        }
+        other => anyhow::bail!("Unsupported device '{}'. Choose: cuda, wgpu, cpu", other),
+    }
+    Ok(())
+}
+
 // === Evaluator Runner ===
 
-fn run_eval(args: &Args) -> Result<()> {
-    type Backend = Cuda<f32, i32>;
-    let device = burn::backend::cuda::CudaDevice::default();
-
+fn run_eval_with_backend<B: Backend>(args: &Args, device: &B::Device) -> Result<()> {
     let model_path = args.model.clone().unwrap_or_else(|| {
         let ext = if args.format == "compact" { "mpk" } else { "safetensors" };
         format!("{}/{}/model.{}", args.weights_dir, args.size, ext)
@@ -348,15 +383,15 @@ fn run_eval(args: &Args) -> Result<()> {
     }
     .with_dropout(0.0);
 
-    let mut model: Gpt2Model<Backend> = cfg.init(&device);
+    let mut model: Gpt2Model<B> = cfg.init(device);
 
     log::info!("Loading weights from '{}' in '{}' format...", model_path, args.format);
     if args.format == "safetensors" {
         let tensor_map = loader::load_safetensors(&model_path)?;
-        model = loader::load_gpt2_weights(model, &tensor_map, &device)?;
+        model = loader::load_gpt2_weights(model, &tensor_map, device)?;
     } else if args.format == "compact" {
         let record = CompactRecorder::new()
-            .load(model_path.clone().into(), &device)
+            .load(model_path.clone().into(), device)
             .map_err(|e| anyhow::anyhow!("Failed to load compact checkpoint: {:?}", e))?;
         model = model.load_record(record);
     }
@@ -367,7 +402,7 @@ fn run_eval(args: &Args) -> Result<()> {
     }
 
     let batcher = training::dataset::TextBatcher;
-    let dataloader = DataLoaderBuilder::<Backend, _, _>::new(batcher)
+    let dataloader = DataLoaderBuilder::<B, _, _>::new(batcher)
         .batch_size(args.batch_size)
         .num_workers(args.workers)
         .build(dataset);
@@ -401,9 +436,46 @@ fn run_eval(args: &Args) -> Result<()> {
     Ok(())
 }
 
+fn run_eval(args: &Args) -> Result<()> {
+    match args.device.as_str() {
+        "cuda" => {
+            #[cfg(feature = "cuda")]
+            {
+                let device = burn::backend::cuda::CudaDevice::default();
+                run_eval_with_backend::<burn::backend::Cuda<f32, i32>>(args, &device)?;
+            }
+            #[cfg(not(feature = "cuda"))]
+            anyhow::bail!("CUDA backend is not enabled. Compile with --features cuda.");
+        }
+        "wgpu" => {
+            #[cfg(feature = "wgpu")]
+            {
+                let device = burn::backend::wgpu::WgpuDevice::default();
+                run_eval_with_backend::<burn::backend::Wgpu<f32, i32>>(args, &device)?;
+            }
+            #[cfg(not(feature = "wgpu"))]
+            anyhow::bail!("WGPU backend is not enabled. Compile with --features wgpu.");
+        }
+        "cpu" => {
+            #[cfg(feature = "ndarray")]
+            {
+                let device = burn::backend::ndarray::NdArrayDevice::default();
+                run_eval_with_backend::<burn::backend::NdArray<f32>>(args, &device)?;
+            }
+            #[cfg(not(feature = "ndarray"))]
+            anyhow::bail!("NdArray (CPU) backend is not enabled. Compile with --features ndarray.");
+        }
+        other => anyhow::bail!("Unsupported device '{}'. Choose: cuda, wgpu, cpu", other),
+    }
+    Ok(())
+}
+
 // === Training Runner ===
 
-fn run_train(args: &Args) -> Result<()> {
+fn run_train_with_backend<B: AutodiffBackend>(args: &Args, device: &B::Device) -> Result<()>
+where
+    B::IntElem: burn::tensor::ElementConversion,
+{
     let model_cfg = match args.size.as_str() {
         "small"  => Gpt2Config::gpt2_small(),
         "medium" => Gpt2Config::gpt2_medium(),
@@ -423,11 +495,41 @@ fn run_train(args: &Args) -> Result<()> {
         .with_num_workers(args.workers)
         .with_train_data(args.data.clone());
 
-    type MyBackend = Cuda<f32, i32>;
-    type MyAutodiff = Autodiff<MyBackend>;
-    let device = burn::backend::cuda::CudaDevice::default();
+    training::train::<B>(&args.artifact_dir, train_cfg, device.clone());
+    Ok(())
+}
 
-    training::train::<MyAutodiff>(&args.artifact_dir, train_cfg, device);
+fn run_train(args: &Args) -> Result<()> {
+    match args.device.as_str() {
+        "cuda" => {
+            #[cfg(feature = "cuda")]
+            {
+                let device = burn::backend::cuda::CudaDevice::default();
+                run_train_with_backend::<burn::backend::Autodiff<burn::backend::Cuda<f32, i32>>>(args, &device)?;
+            }
+            #[cfg(not(feature = "cuda"))]
+            anyhow::bail!("CUDA backend is not enabled. Compile with --features cuda.");
+        }
+        "wgpu" => {
+            #[cfg(feature = "wgpu")]
+            {
+                let device = burn::backend::wgpu::WgpuDevice::default();
+                run_train_with_backend::<burn::backend::Autodiff<burn::backend::Wgpu<f32, i32>>>(args, &device)?;
+            }
+            #[cfg(not(feature = "wgpu"))]
+            anyhow::bail!("WGPU backend is not enabled. Compile with --features wgpu.");
+        }
+        "cpu" => {
+            #[cfg(feature = "ndarray")]
+            {
+                let device = burn::backend::ndarray::NdArrayDevice::default();
+                run_train_with_backend::<burn::backend::Autodiff<burn::backend::NdArray<f32>>>(args, &device)?;
+            }
+            #[cfg(not(feature = "ndarray"))]
+            anyhow::bail!("NdArray (CPU) backend is not enabled. Compile with --features ndarray.");
+        }
+        other => anyhow::bail!("Unsupported device '{}'. Choose: cuda, wgpu, cpu", other),
+    }
     Ok(())
 }
 

@@ -76,6 +76,7 @@ cargo run --release -- --generate --model weights/small/model.safetensors --prom
   * `--top-k <N>`: Top-K cutoff value (0 to disable).
   * `--top-p <F>`: Top-P (nucleus) value (0.0 to disable).
   * `--seed <N>`: Random seed for reproducibility.
+  * `--device <cuda|wgpu|cpu>`: Compute backend device (default is `cuda`).
 
 ### 3. Evaluate Perplexity (`--evaluate`)
 Evaluates cross-entropy loss and perplexity on a test dataset:
@@ -88,6 +89,7 @@ cargo run --release -- --evaluate --model weights/small/model.safetensors --form
   * `--data <path>`: Path to validation dataset file.
   * `--seq-len <N>`: Sliding window sequence length.
   * `--batch-size <N>`: Evaluation batch size.
+  * `--device <cuda|wgpu|cpu>`: Compute backend device (default is `cuda`).
 
 ### 4. Pre-Train or Fine-Tune (`--train`)
 Performs pre-training or fine-tuning from scratch:
@@ -100,13 +102,14 @@ cargo run --release -- --train --data data/input.txt --artifact-dir artifacts/ -
   * `--epochs <N>`: Number of training epochs.
   * `--lr <F>`: AdamW peak learning rate.
   * `--dropout <F>`: Dropout probability.
+  * `--device <cuda|wgpu|cpu>`: Compute backend device (default is `cuda`).
 
 ---
 
 ## Tech Stack
 
 - **Deep Learning Framework:** [Burn](https://burn.dev) (v0.21)
-- **GPU Engine:** WGPU (via Vulkan, Metal, or DX12)
+- **Compute Backends:** CUDA (default, native Rust GPU), WGPU (optional WebGPU), or NdArray (CPU fallback)
 - **Tokenizer:** `tiktoken-rs` (v0.5, BPE encoding)
 - **Serialization:** `safetensors` (v0.4) & `memmap2` (v0.9)
 
