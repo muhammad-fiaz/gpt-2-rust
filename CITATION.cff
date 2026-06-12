@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: "Fiaz"
+    given-names: "Muhammad"
+    email: "contact@muhammadfiaz.com"
+title: "GPT-2 Rust"
+version: "0.1.0"
+date-released: "2026-06-12"
+url: "https://github.com/muhammad-fiaz/gpt-2-rust"
+license: "MIT"
+repository-code: "https://github.com/muhammad-fiaz/gpt-2-rust"
+abstract: "A native Rust implementation of the GPT-2 transformer architecture built from scratch using the Burn deep-learning framework with CUDA acceleration support."
+keywords:
+  - gpt2
+  - transformer
+  - burn
+  - rust
+  - deep-learning
+  - llm
+  - cuda
