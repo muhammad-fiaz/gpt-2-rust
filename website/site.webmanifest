@@ -1,5 +1,5 @@
 {
-  "name": "GPT-2 in Rust",
+  "name": "GPT-2 in Rust Implementation",
   "short_name": "GPT-2 Rust",
   "description": "GPT-2 transformer implemented from scratch in Rust using Burn. CUDA GPU acceleration, BPE tokenizer, text generation, fine-tuning.",
   "start_url": "/gpt-2-rust/",
