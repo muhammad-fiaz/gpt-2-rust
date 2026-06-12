@@ -1,0 +1,9 @@
+/target
+/weights
+/artifacts
+/*.mpk
+/*.safetensors
+.env
+.idea
+.vscode
+.DS_Store

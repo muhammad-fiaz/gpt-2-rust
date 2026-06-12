@@ -1,0 +1,47 @@
+[package]
+name        = "gpt-2-rust"
+version     = "0.1.0"
+edition     = "2024"
+authors     = ["Muhammad Fiaz <contact@muhammadfiaz.com>"]
+description = "GPT-2 implemented from scratch in Rust using the Burn deep-learning framework"
+repository  = "https://github.com/muhammad-fiaz/gpt-2-rust"
+license     = "MIT"
+keywords    = ["gpt2", "transformer", "burn", "deep-learning", "llm"]
+categories  = ["science", "machine-learning"]
+
+[dependencies]
+burn = { version = "~0.21", default-features = false, features = [
+    "std",
+    "cuda",
+    "fusion",
+    "train",
+    "tui",
+    "autodiff",
+    "ndarray",
+] }
+
+safetensors = "0.4"
+memmap2     = "0.9"
+
+tiktoken-rs = "0.5"
+
+serde      = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+anyhow    = "1"
+thiserror = "2"
+
+log        = "0.4"
+env_logger = "0.11"
+
+clap = { version = "4", features = ["derive"] }
+
+rand = { version = "0.8", features = ["std_rng"] }
+
+[dev-dependencies]
+approx = "0.5"
+
+[profile.release]
+opt-level     = 3
+lto           = false
+codegen-units = 16
