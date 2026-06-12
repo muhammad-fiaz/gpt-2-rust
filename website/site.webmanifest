@@ -1,0 +1,16 @@
+{
+  "name": "GPT-2 in Rust",
+  "short_name": "GPT-2 Rust",
+  "description": "GPT-2 transformer implemented from scratch in Rust using Burn. CUDA GPU acceleration, BPE tokenizer, text generation, fine-tuning.",
+  "start_url": "/gpt-2-rust/",
+  "display": "standalone",
+  "background_color": "#0d1117",
+  "theme_color": "#e74c3c",
+  "icons": [
+    {
+      "src": "static/img/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    }
+  ]
+}

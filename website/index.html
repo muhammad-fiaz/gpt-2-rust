@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GPT-2 in Rust | Burn Deep Learning Framework</title>
+  <meta name="description" content="GPT-2 transformer implemented from scratch in Rust using Burn. CUDA GPU acceleration, BPE tokenizer, text generation, fine-tuning." />
+  <meta name="keywords" content="GPT-2, Rust, Burn, Transformer, CUDA, GPU, Deep Learning, NLP, Language Model, Text Generation" />
+  <meta name="author" content="Muhammad Fiaz" />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#0d1117" />
+  <link rel="canonical" href="https://muhammad-fiaz.github.io/gpt-2-rust/" />
+  <link rel="sitemap" type="application/xml" href="sitemap.xml" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="static/img/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="static/img/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="static/img/favicon-16x16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="static/img/apple-touch-icon.png" />
+  <link rel="manifest" href="site.webmanifest" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://muhammad-fiaz.github.io/gpt-2-rust/" />
+  <meta property="og:title" content="GPT-2 in Rust | Burn Deep Learning Framework" />
+  <meta property="og:description" content="GPT-2 transformer implemented from scratch in Rust using Burn. CUDA GPU acceleration, BPE tokenizer, text generation, fine-tuning." />
+  <meta property="og:image" content="https://muhammad-fiaz.github.io/gpt-2-rust/static/img/og-image.svg" />
+  <meta property="og:image:alt" content="GPT-2 Rust - Transformer architecture in Rust with Burn" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:site_name" content="GPT-2 in Rust" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@muhammadfiaz_" />
+  <meta name="twitter:creator" content="@muhammadfiaz_" />
+  <meta name="twitter:title" content="GPT-2 in Rust | Burn Deep Learning Framework" />
+  <meta name="twitter:description" content="GPT-2 transformer implemented from scratch in Rust using Burn. CUDA GPU acceleration, BPE tokenizer, text generation, fine-tuning." />
+  <meta name="twitter:image" content="https://muhammad-fiaz.github.io/gpt-2-rust/static/img/og-image.svg" />
+  <meta name="twitter:image:alt" content="GPT-2 Rust - Transformer architecture in Rust with Burn" />
+
+  <!-- JSON-LD Structured Data: WebSite -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "GPT-2 in Rust",
+    "url": "https://muhammad-fiaz.github.io/gpt-2-rust/",
+    "description": "GPT-2 transformer implemented from scratch in Rust using Burn. CUDA GPU acceleration, BPE tokenizer, text generation, fine-tuning.",
+    "author": {
+      "@type": "Person",
+      "name": "Muhammad Fiaz",
+      "url": "https://muhammadfiaz.com",
+      "sameAs": [
+        "https://muhammadfiaz.com",
+        "https://muhammad-fiaz.github.io",
+        "https://github.com/muhammad-fiaz",
+        "https://github.com/muhammad-fiaz/gpt-2-rust",
+        "https://x.com/muhammadfiaz_"
+      ]
+    },
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://muhammad-fiaz.github.io/gpt-2-rust/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+
+  <!-- JSON-LD Structured Data: SoftwareApplication -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "GPT-2 in Rust",
+    "operatingSystem": "Windows, Linux",
+    "applicationCategory": "MachineLearningApplication",
+    "description": "GPT-2 transformer implemented from scratch in Rust using Burn. CUDA GPU acceleration, BPE tokenizer, text generation, fine-tuning.",
+    "url": "https://muhammad-fiaz.github.io/gpt-2-rust/",
+    "downloadUrl": "https://github.com/muhammad-fiaz/gpt-2-rust",
+    "softwareVersion": "1.0.0",
+    "author": {
+      "@type": "Person",
+      "name": "Muhammad Fiaz",
+      "url": "https://muhammadfiaz.com"
+    },
+    "license": "https://opensource.org/licenses/MIT",
+    "programmingLanguage": "Rust",
+    "runtimePlatform": "CUDA, WGPU, CPU",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+
+  <!-- JSON-LD Structured Data: BreadcrumbList -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://muhammad-fiaz.github.io/gpt-2-rust/"
+      }
+    ]
+  }
+  </script>
+
+  <!-- JSON-LD Structured Data: CreativeWork (for papers) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
+    "name": "Attention Is All You Need",
+    "author": [
+      {"@type": "Person", "name": "Ashish Vaswani"},
+      {"@type": "Person", "name": "Noam Shazeer"},
+      {"@type": "Person", "name": "Niki Parmar"},
+      {"@type": "Person", "name": "Jakob Uszkoreit"},
+      {"@type": "Person", "name": "Llion Jones"},
+      {"@type": "Person", "name": "Aidan N. Gomez"},
+      {"@type": "Person", "name": "Lukasz Kaiser"},
+      {"@type": "Person", "name": "Illia Polosukhin"}
+    ],
+    "datePublished": "2017",
+    "url": "https://arxiv.org/abs/1706.03762",
+    "publisher": {"@type": "Organization", "name": "NeurIPS"}
+  }
+  </script>
+
+  <!-- JSON-LD Structured Data: CreativeWork (GPT-2 paper) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
+    "name": "Language Models are Unsupervised Multitask Learners",
+    "author": [
+      {"@type": "Person", "name": "Alec Radford"},
+      {"@type": "Person", "name": "Jeffrey Wu"},
+      {"@type": "Person", "name": "Rewon Child"},
+      {"@type": "Person", "name": "David Luan"},
+      {"@type": "Person", "name": "Dario Amodei"},
+      {"@type": "Person", "name": "Ilya Sutskever"}
+    ],
+    "datePublished": "2019",
+    "url": "https://d4mucfpruptmv.cloudfront.net/better-language-models/language-models_are_unsupervised_multitask_learners.pdf",
+    "publisher": {"@type": "Organization", "name": "OpenAI"}
+  }
+  </script>
+
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-P4M9T8ZR');</script>
+  <!-- End Google Tag Manager -->
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6BVYCRK57P"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-6BVYCRK57P');
+  </script>
+  <!-- End Google Analytics -->
+
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2040560600290490" crossorigin="anonymous"></script>
+  <!-- End Google AdSense -->
+
+  <style>
+    :root {
+      --bg: #0d1117;
+      --bg-alt: #161b22;
+      --bg-card: #1c2333;
+      --text: #e6edf3;
+      --text-dim: #8b949e;
+      --accent: #e74c3c;
+      --orange: #f39c12;
+      --blue: #58a6ff;
+      --border: #30363d;
+      --code: #1a1e2e;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-text-size-adjust: 100%;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    img { max-width: 100%; height: auto; }
+
+    /* Layout */
+    .wrap { max-width: 880px; margin: 0 auto; padding: 0 20px; }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 60px 20px 50px;
+      background: linear-gradient(160deg, #0d1117, #1a1040 50%, #0d1117);
+      border-bottom: 1px solid var(--border);
+    }
+    .hero h1 { font-size: clamp(2rem, 5vw, 3.2rem); margin-bottom: 12px; }
+    .hero h1 .r { color: var(--accent); }
+    .hero h1 .f { color: var(--orange); }
+    .hero p { font-size: clamp(1rem, 2.5vw, 1.15rem); color: var(--text-dim); max-width: 600px; margin: 0 auto 28px; }
+
+    /* Badges */
+    .badges { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 28px; }
+    .badges img { height: 20px; }
+
+    /* Buttons */
+    .btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 11px 24px; border-radius: 8px; font-weight: 600; font-size: 0.95rem;
+      transition: transform .12s, box-shadow .12s;
+    }
+    .btn:hover { text-decoration: none; transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,.4); }
+    .btn-p { background: var(--accent); color: #fff; }
+    .btn-s { background: var(--bg-alt); color: var(--text); border: 1px solid var(--border); }
+
+    /* Sections */
+    .sec { padding: 48px 0; border-bottom: 1px solid var(--border); }
+    .sec:last-of-type { border-bottom: none; }
+    h2 { font-size: 1.6rem; margin-bottom: 16px; }
+    h3 { font-size: 1.15rem; margin: 20px 0 10px; }
+    p { margin-bottom: 14px; color: var(--text-dim); }
+
+    /* Quick Start steps */
+    .steps { counter-reset: step; margin: 20px 0; }
+    .step {
+      counter-increment: step;
+      display: flex; gap: 16px; align-items: flex-start;
+      margin-bottom: 20px;
+    }
+    .step-num {
+      flex-shrink: 0;
+      width: 36px; height: 36px;
+      background: var(--accent); color: #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.9rem;
+    }
+    .step-body { flex: 1; min-width: 0; }
+    .step-body h4 { font-size: 1rem; margin-bottom: 6px; color: var(--text); }
+
+    /* Code */
+    pre {
+      background: var(--code); border: 1px solid var(--border); border-radius: 8px;
+      padding: 14px 16px; overflow-x: auto; margin: 10px 0; font-size: 0.85rem; line-height: 1.5;
+    }
+    code {
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+      font-size: 0.88em;
+    }
+    :not(pre) > code {
+      background: var(--code); padding: 2px 5px; border-radius: 4px; border: 1px solid var(--border);
+    }
+    pre code { background: none; border: none; padding: 0; }
+
+    /* Table */
+    .tbl { overflow-x: auto; margin: 16px 0; }
+    table { width: 100%; border-collapse: collapse; background: var(--bg-alt); border-radius: 8px; overflow: hidden; }
+    th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+    th { background: var(--bg-card); color: var(--text); font-weight: 600; }
+    td { color: var(--text-dim); }
+    tr:last-child td { border-bottom: none; }
+
+    /* Feature pills */
+    .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+    .pill {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px;
+      padding: 6px 14px; font-size: 0.85rem; color: var(--text-dim); white-space: nowrap;
+    }
+
+    /* Ad */
+    .ad {
+      margin: 32px 0; text-align: center; min-height: 90px;
+      background: var(--bg-alt); border: 1px dashed var(--border); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-dim); font-size: 0.8rem;
+    }
+
+    /* Citation */
+    .cite {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px;
+      padding: 12px 16px; margin: 10px 0;
+      font-family: 'SF Mono', monospace; font-size: 0.8rem; color: var(--text-dim);
+      white-space: pre-wrap; word-break: break-word;
+    }
+
+    /* Social links */
+    .socials { display: flex; gap: 12px; justify-content: center; margin: 20px 0; }
+    .social-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px;
+      padding: 10px 18px; font-size: 0.9rem; color: var(--text);
+      transition: border-color .15s, transform .12s;
+    }
+    .social-link:hover { border-color: var(--blue); text-decoration: none; transform: translateY(-1px); }
+    .social-link svg { width: 20px; height: 20px; fill: var(--text); }
+
+    /* Footer */
+    footer {
+      text-align: center; padding: 32px 20px; color: var(--text-dim); font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--blue); }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .hero { padding: 40px 16px 36px; }
+      .sec { padding: 32px 0; }
+      .step { gap: 12px; }
+      .step-num { width: 30px; height: 30px; font-size: 0.8rem; }
+      pre { padding: 10px 12px; font-size: 0.8rem; }
+      .socials { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- GTM noscript -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P4M9T8ZR"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<!-- Hero -->
+<header class="hero">
+  <div class="wrap">
+    <h1><span class="r">GPT-2</span> <span class="f">in Rust</span> &#x1F980;&#x1F525;</h1>
+    <p>Transformer from scratch. CUDA GPU acceleration. Burn deep learning framework.</p>
+    <div class="badges">
+      <a href="https://github.com/muhammad-fiaz/gpt-2-rust/actions"><img src="https://img.shields.io/github/actions/workflow/status/muhammad-fiaz/gpt-2-rust/rust.yml?branch=main" alt="Build Status" /></a>
+      <a href="https://github.com/muhammad-fiaz/gpt-2-rust/issues"><img src="https://img.shields.io/github/issues/muhammad-fiaz/gpt-2-rust" alt="Issues" /></a>
+      <a href="https://github.com/muhammad-fiaz/gpt-2-rust/pulls"><img src="https://img.shields.io/github/issues-pr/muhammad-fiaz/gpt-2-rust" alt="PRs" /></a>
+      <a href="https://github.com/muhammad-fiaz/gpt-2-rust/graphs/commit-activity"><img src="https://img.shields.io/github/last-commit/muhammad-fiaz/gpt-2-rust" alt="Last Commit" /></a>
+      <a href="https://github.com/muhammad-fiaz/gpt-2-rust/blob/main/LICENSE"><img src="https://img.shields.io/github/license/muhammad-fiaz/gpt-2-rust" alt="License" /></a>
+    </div>
+    <div class="btns">
+      <a href="#quickstart" class="btn btn-p">&#x1F680; Get Started</a>
+      <a href="https://github.com/muhammad-fiaz/gpt-2-rust" class="btn btn-s">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- Quick Start -->
+<section class="sec" id="quickstart">
+  <div class="wrap">
+    <h2>&#x1F680; Quick Start</h2>
+    <p><strong>Prerequisites:</strong> Rust and Cargo installed (Edition 2024 or latest). A CUDA-capable GPU is recommended, or use <code>--device cpu</code>.</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Clone the repo</h4>
+          <pre><code>git clone https://github.com/muhammad-fiaz/gpt-2-rust.git
+cd gpt-2-rust</code></pre>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Download model weights</h4>
+          <pre><code>cargo run --release -- --download --size small --weights-dir weights</code></pre>
+          <p>Options: <code>small</code> (117M), <code>medium</code> (345M), <code>large</code> (762M), <code>xl</code> (1.5B), or <code>all</code>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Generate text</h4>
+          <pre><code>cargo run --release -- --generate \
+  --model weights/small/model.safetensors \
+  --prompt "The future of artificial intelligence is" \
+  --size small \
+  --max-new-tokens 100 \
+  --temperature 0.8</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Ad -->
+<div class="wrap"><div class="ad">Advertisement</div></div>
+
+<!-- Features -->
+<section class="sec" id="features">
+  <div class="wrap">
+    <h2>&#x2728; Features</h2>
+    <div class="pills">
+      <span class="pill">&#x1F9E0; Custom Causal Self-Attention</span>
+      <span class="pill">&#x1F4A1; Token &amp; Positional Embeddings</span>
+      <span class="pill">&#x1F3D7;&#xFE0F; Pre-norm Block Architecture</span>
+      <span class="pill">&#x26A1; GELU-activated MLP</span>
+      <span class="pill">&#x1F517; LM Head with Weight Tying</span>
+      <span class="pill">&#x1F4DC; Pure-Rust BPE Tokenizer</span>
+      <span class="pill">&#x1F4E1; Real-Time Word Streaming</span>
+      <span class="pill">&#x1F5A5;&#xFE0F; GPU Weight Offloading</span>
+      <span class="pill">&#x26A1; CUDA / WGPU / CPU Backends</span>
+      <span class="pill">&#x1F4E6; Single CLI Binary</span>
+    </div>
+  </div>
+</section>
+
+<!-- Model Sizes -->
+<section class="sec" id="models">
+  <div class="wrap">
+    <h2>&#x1F4D0; Model Sizes</h2>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Variant</th><th>Params</th><th>Layers</th><th>Heads</th><th>Embed dim</th></tr></thead>
+        <tbody>
+          <tr><td><code>small</code></td><td>117 M</td><td>12</td><td>12</td><td>768</td></tr>
+          <tr><td><code>medium</code></td><td>345 M</td><td>24</td><td>16</td><td>1024</td></tr>
+          <tr><td><code>large</code></td><td>762 M</td><td>36</td><td>20</td><td>1280</td></tr>
+          <tr><td><code>xl</code></td><td>1.5 B</td><td>48</td><td>25</td><td>1600</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- CLI Reference -->
+<section class="sec" id="cli">
+  <div class="wrap">
+    <h2>&#x1F4BB; CLI Reference</h2>
+    <p>Single binary, four modes:</p>
+
+    <h3><code>--download</code> &mdash; Fetch weights</h3>
+    <pre><code>cargo run --release -- --download --size small --weights-dir weights</code></pre>
+
+    <h3><code>--generate</code> &mdash; Text generation</h3>
+    <pre><code>cargo run --release -- --generate \
+  --model weights/small/model.safetensors \
+  --prompt "Your prompt" \
+  --size small \
+  --max-new-tokens 100 \
+  --temperature 0.8 \
+  --top-k 50 \
+  --top-p 0.9 \
+  --device cuda</code></pre>
+
+    <h3><code>--evaluate</code> &mdash; Perplexity</h3>
+    <pre><code>cargo run --release -- --evaluate \
+  --model weights/small/model.safetensors \
+  --format safetensors \
+  --data data/input.txt \
+  --seq-len 128 \
+  --batch-size 4</code></pre>
+
+    <h3><code>--train</code> &mdash; Pre-train / fine-tune</h3>
+    <pre><code>cargo run --release -- --train \
+  --data data/input.txt \
+  --artifact-dir artifacts/ \
+  --size small \
+  --epochs 3 \
+  --batch-size 4 \
+  --seq-len 128 \
+  --lr 3e-4</code></pre>
+  </div>
+</section>
+
+<!-- Ad -->
+<div class="wrap"><div class="ad">Advertisement</div></div>
+
+<!-- Tech Stack -->
+<section class="sec" id="tech">
+  <div class="wrap">
+    <h2>&#x1F527; Tech Stack</h2>
+    <div class="pills">
+      <span class="pill"><a href="https://burn.dev">Burn</a> v0.21</span>
+      <span class="pill">CUDA / WGPU / NdArray</span>
+      <span class="pill">tiktoken-rs v0.5</span>
+      <span class="pill">safetensors v0.4</span>
+      <span class="pill">memmap2 v0.9</span>
+    </div>
+  </div>
+</section>
+
+<!-- Citations -->
+<section class="sec" id="citations">
+  <div class="wrap">
+    <h2>&#x1F4DA; Citations</h2>
+
+    <h3>Attention Is All You Need</h3>
+    <p><a href="https://arxiv.org/abs/1706.03762">arXiv</a> &middot; <a href="https://huggingface.co/papers/1706.03762">HuggingFace</a></p>
+    <div class="cite">@inproceedings{vaswani2017attention,
+  title     = {Attention is all you need},
+  author    = {Vaswani, Ashish and others},
+  booktitle = {NeurIPS},
+  pages     = {5998--6008},
+  year      = {2017}
+}</div>
+
+    <h3>GPT-2</h3>
+    <div class="cite">@article{radford2019language,
+  title   = {Language models are unsupervised multitask learners},
+  author  = {Radford, Alec and others},
+  journal = {OpenAI blog},
+  year    = {2019}
+}</div>
+
+    <h3>Burn Framework</h3>
+    <div class="cite">@misc{burn2024,
+  title = {Burn: A Flexible and Modern Deep Learning Framework in Rust},
+  url   = {https://burn.dev/},
+  year  = {2024}
+}</div>
+
+    <h3>GPT-2 Rust</h3>
+    <div class="cite">@misc{gpt2rust2026,
+  author       = {Muhammad Fiaz},
+  title        = {GPT-2 Rust: Native Rust GPT-2 with Burn},
+  howpublished = {https://github.com/muhammad-fiaz/gpt-2-rust},
+  year         = {2026}
+}</div>
+  </div>
+</section>
+
+<!-- Author -->
+<section class="sec" id="author">
+  <div class="wrap">
+    <h2>&#x1F464; Author</h2>
+    <p><a href="https://muhammadfiaz.com">Muhammad Fiaz</a> &middot; <a href="https://github.com/muhammad-fiaz">GitHub</a> &middot; <a href="https://x.com/muhammadfiaz_">X</a></p>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="wrap">
+    <p>&copy; 2026 <a href="https://muhammadfiaz.com">Muhammad Fiaz</a> &middot; Built with Rust &amp; <a href="https://burn.dev">Burn</a></p>
+    <p style="margin-top:6px">
+      <a href="https://muhammadfiaz.com">Website</a> &middot;
+      <a href="https://muhammad-fiaz.github.io">GitHub Pages</a> &middot;
+      <a href="https://github.com/muhammad-fiaz">GitHub</a> &middot;
+      <a href="https://x.com/muhammadfiaz_">X</a> &middot;
+      <a href="https://github.com/muhammad-fiaz/gpt-2-rust">Source</a> &middot;
+      <a href="https://github.com/muhammad-fiaz/gpt-2-rust/blob/main/LICENSE">MIT License</a> &middot;
+      <a href="https://github.com/muhammad-fiaz/gpt-2-rust/blob/main/CONTRIBUTING.md">Contributing</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>

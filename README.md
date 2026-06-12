@@ -6,6 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/muhammad-fiaz/gpt-2-rust/actions"><img src="https://img.shields.io/github/actions/workflow/status/muhammad-fiaz/gpt-2-rust/rust.yml?branch=main" alt="Build Status" /></a>
+  <a href="https://muhammad-fiaz.github.io/gpt-2-rust/"><img src="https://img.shields.io/badge/demo-GitHub%20Pages-blue" alt="GitHub Pages" /></a>
   <a href="https://github.com/muhammad-fiaz/gpt-2-rust/issues"><img src="https://img.shields.io/github/issues/muhammad-fiaz/gpt-2-rust" alt="GitHub Issues" /></a>
   <a href="https://github.com/muhammad-fiaz/gpt-2-rust/pulls"><img src="https://img.shields.io/github/issues-pr/muhammad-fiaz/gpt-2-rust" alt="GitHub Pull Requests" /></a>
   <a href="https://github.com/muhammad-fiaz/gpt-2-rust/graphs/commit-activity"><img src="https://img.shields.io/github/last-commit/muhammad-fiaz/gpt-2-rust" alt="GitHub Last Commit" /></a>

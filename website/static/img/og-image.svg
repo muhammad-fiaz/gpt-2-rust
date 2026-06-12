@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1117"/>
+      <stop offset="50%" stop-color="#1a1040"/>
+      <stop offset="100%" stop-color="#0d1117"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#e74c3c"/>
+      <stop offset="100%" stop-color="#f39c12"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="60" y="60" width="1080" height="510" rx="24" fill="#161b22" stroke="#30363d" stroke-width="2"/>
+  <text x="600" y="240" text-anchor="middle" font-family="Arial,sans-serif" font-weight="bold" font-size="68" fill="url(#accent)">GPT-2 in Rust</text>
+  <text x="600" y="300" text-anchor="middle" font-family="Arial,sans-serif" font-size="22" fill="#e6edf3">Transformer from scratch with Burn</text>
+  <text x="600" y="350" text-anchor="middle" font-family="Arial,sans-serif" font-size="18" fill="#8b949e">CUDA GPU | BPE Tokenizer | Text Generation | Fine-tuning</text>
+  <text x="600" y="420" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" fill="#8b949e">github.com/muhammad-fiaz/gpt-2-rust</text>
+  <rect x="60" y="540" width="1080" height="30" rx="0" fill="#e74c3c" opacity="0.15"/>
+</svg>

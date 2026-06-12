@@ -7,3 +7,6 @@
 .idea
 .vscode
 .DS_Store
+website/node_modules/
+website/build/
+website/.docusaurus/
